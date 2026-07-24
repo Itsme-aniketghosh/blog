@@ -1,0 +1,220 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { href } from '../lib/paths';
+import { elsewhere } from '../lib/site';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+const recent = posts.slice(0, 5);
+
+const headWords = ['Everything', 'I', 'write', '—', 'and', 'where', 'to', 'read', 'it.'];
+---
+
+<Base ogType="website">
+  <section class="hero wrap">
+    <p class="eyebrow mono">Aniket Ghosh · Writing</p>
+    <h1 class="hero-title">
+      {
+        headWords.map((w, i) => (
+          <span class="word-mask">
+            <span class="word" style={`--i:${i}`}>{w}</span>
+          </span>
+        ))
+      }
+    </h1>
+    <p class="hero-lede reveal">
+      Research on mechanistic interpretability and AI safety, plus essays and
+      notes. This page is the index — each piece links out to wherever it
+      lives: LessWrong, Substack, Medium.
+    </p>
+    <div class="hero-cta reveal">
+      <a href={href('/posts')} class="btn">Browse writing</a>
+      <a href="https://itsme-aniketghosh.github.io" target="_blank" rel="noopener" class="btn ghost">
+        Portfolio <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="section-head">
+      <h2 class="section-title">Recent</h2>
+      <a href={href('/posts')} class="see-all mono">All writing →</a>
+    </div>
+    <div class="stream">
+      {recent.map((entry) => <PostCard entry={entry} />)}
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <h2 class="section-title">Elsewhere</h2>
+    <ul class="hub reveal-stagger">
+      {
+        elsewhere.map((e) => (
+          <li>
+            <a href={e.href} target="_blank" rel="noopener" class="hub-item">
+              <span class="hub-label">
+                {e.label} <span class="arrow" aria-hidden="true">↗</span>
+              </span>
+              <span class="hub-note">{e.note}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-top: clamp(4rem, 3rem + 8vw, 9rem);
+    padding-bottom: clamp(3rem, 2rem + 5vw, 6rem);
+  }
+  .eyebrow {
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+  .hero-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(2.6rem, 1.4rem + 6vw, 6rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    max-width: 16ch;
+  }
+  /* One orchestrated moment: words rise into place on load. */
+  .word-mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    margin-right: 0.22em;
+  }
+  .word {
+    display: inline-block;
+    transform: translateY(105%);
+    animation: word-rise 0.9s var(--ease) forwards;
+    animation-delay: calc(var(--i) * 60ms + 120ms);
+  }
+  @keyframes word-rise {
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .hero-lede {
+    margin: 2rem 0 0;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: rgb(var(--text-rgb) / 0.66);
+    max-width: 52ch;
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 2.2rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    background: var(--text);
+    color: var(--bg);
+    transition: transform 0.3s var(--ease);
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+
+  .section {
+    padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .see-all {
+    color: rgb(var(--text-rgb) / 0.55);
+    transition: color 0.25s var(--ease);
+  }
+  .see-all:hover {
+    color: var(--text);
+  }
+  .stream {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hub {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .hub-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.5rem;
+    background: var(--bg);
+    height: 100%;
+    transition: background 0.3s var(--ease);
+  }
+  .hub-item:hover {
+    background: var(--surface);
+  }
+  .hub-label {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+  .hub-item:hover .arrow {
+    display: inline-block;
+    transform: translate(2px, -2px);
+  }
+  .arrow {
+    transition: transform 0.3s var(--ease);
+    color: var(--muted);
+  }
+  .hub-note {
+    font-size: 0.9rem;
+    color: rgb(var(--text-rgb) / 0.55);
+    line-height: 1.45;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .word {
+      transform: none;
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,98 @@
+---
+// Quiet filter over the unified stream. One stream, not a nav split — the two
+// kinds are a true distinction, so they earn a signal, not a second section.
+interface Props {
+  counts: { all: number; research: number; personal: number };
+}
+const { counts } = Astro.props;
+const items = [
+  { key: 'all', label: 'All', n: counts.all },
+  { key: 'research', label: 'Research', n: counts.research },
+  { key: 'personal', label: 'Personal', n: counts.personal },
+] as const;
+---
+
+<div class="filter mono" role="tablist" aria-label="Filter writing by kind">
+  {
+    items.map((it, i) => (
+      <button
+        role="tab"
+        class="filter-btn"
+        data-filter={it.key}
+        aria-selected={i === 0 ? 'true' : 'false'}
+      >
+        {it.label}
+        <span class="count">{it.n}</span>
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('[data-kind]');
+
+  function apply(kind: string) {
+    for (const card of cards) {
+      const show = kind === 'all' || card.dataset.kind === kind;
+      card.style.display = show ? '' : 'none';
+    }
+    for (const b of buttons) {
+      b.setAttribute('aria-selected', b.dataset.filter === kind ? 'true' : 'false');
+    }
+    const url = new URL(location.href);
+    if (kind === 'all') url.searchParams.delete('kind');
+    else url.searchParams.set('kind', kind);
+    history.replaceState(null, '', url);
+  }
+
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => apply(b.dataset.filter!))
+  );
+
+  // Honor ?kind= on load (e.g. linked from home).
+  const initial = new URLSearchParams(location.search).get('kind');
+  if (initial === 'research' || initial === 'personal') apply(initial);
+</script>
+
+<style>
+  .filter {
+    display: inline-flex;
+    gap: 0.35rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.3rem;
+  }
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 0;
+    color: rgb(var(--text-rgb) / 0.55);
+    font: inherit;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition:
+      color 0.25s var(--ease),
+      background 0.25s var(--ease);
+  }
+  .filter-btn:hover {
+    color: var(--text);
+  }
+  .filter-btn[aria-selected='true'] {
+    background: rgb(var(--text-rgb) / 0.08);
+    color: var(--text);
+  }
+  .count {
+    font-size: 0.9em;
+    color: rgb(var(--text-rgb) / 0.35);
+  }
+  .filter-btn[aria-selected='true'] .count {
+    color: rgb(var(--text-rgb) / 0.55);
+  }
+</style>

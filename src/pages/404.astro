@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/paths';
+---
+
+<Base title="Not found" description="That page doesn't exist.">
+  <section class="wrap nf">
+    <p class="code mono">404</p>
+    <h1 class="nf-title">This page slipped the index.</h1>
+    <p class="nf-lede">
+      The writing you're after may live on another platform, or the link is
+      stale. Try the full stream.
+    </p>
+    <a href={href('/posts')} class="btn">All writing →</a>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: clamp(5rem, 4rem + 8vw, 10rem);
+    max-width: 44rem;
+  }
+  .code {
+    color: var(--muted);
+    margin: 0 0 1rem;
+  }
+  .nf-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(2rem, 1.4rem + 3vw, 3.2rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .nf-lede {
+    margin: 1rem 0 2rem;
+    color: rgb(var(--text-rgb) / 0.62);
+    max-width: 46ch;
+    font-size: 1.1rem;
+  }
+  .btn {
+    display: inline-flex;
+    padding: 0.7rem 1.2rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    background: var(--text);
+    color: var(--bg);
+    transition: transform 0.3s var(--ease);
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+</style>

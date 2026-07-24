@@ -1,0 +1,144 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { href } from '../lib/paths';
+import { platforms } from '../lib/site';
+
+interface Props {
+  entry: CollectionEntry<'posts'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+
+const isExternal = Boolean(d.url);
+const linkHref = isExternal ? d.url! : href(`/posts/${entry.id}`);
+const dest =
+  isExternal && d.platform && d.platform !== 'site'
+    ? platforms[d.platform].label
+    : null;
+
+const dateStr = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+}).format(d.pubDate);
+const dateISO = d.pubDate.toISOString();
+---
+
+<article class="card" data-kind={d.kind}>
+  <a
+    class="card-link"
+    href={linkHref}
+    {...(isExternal ? { target: '_blank', rel: 'noopener' } : {})}
+    aria-label={d.title}
+  >
+    <div class="card-meta mono">
+      <span class="kind">{d.kind}</span>
+      <time datetime={dateISO}>{dateStr}</time>
+    </div>
+
+    <h3 class="card-title">{d.title}</h3>
+    <p class="card-desc">{d.description}</p>
+
+    <div class="card-foot">
+      {
+        d.tags.length > 0 && (
+          <ul class="tags mono">
+            {d.tags.slice(0, 3).map((t) => (
+              <li>#{t}</li>
+            ))}
+          </ul>
+        )
+      }
+      <span class="dest mono">
+        {
+          isExternal ? (
+            <>
+              {dest ?? 'External'} <span class="arrow" aria-hidden="true">↗</span>
+            </>
+          ) : (
+            <>
+              Read <span class="arrow" aria-hidden="true">→</span>
+            </>
+          )
+        }
+      </span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card {
+    border-top: 1px solid var(--border);
+  }
+  .card-link {
+    display: block;
+    padding: 1.9rem 0;
+    transition: opacity 0.3s var(--ease);
+  }
+  .card-link:hover {
+    opacity: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 0.7rem;
+  }
+  .kind {
+    color: var(--text);
+  }
+  .card-meta time {
+    color: var(--muted);
+  }
+
+  .card-title {
+    font-family: var(--display);
+    font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: rgb(var(--text-rgb) / 0.82);
+    transition: color 0.3s var(--ease);
+  }
+  .card-link:hover .card-title {
+    color: var(--text);
+  }
+
+  .card-desc {
+    margin: 0.6rem 0 0;
+    color: rgb(var(--text-rgb) / 0.62);
+    max-width: 60ch;
+    line-height: 1.6;
+  }
+
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.1rem;
+  }
+  .tags {
+    display: flex;
+    gap: 0.8rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: rgb(var(--text-rgb) / 0.4);
+  }
+  .dest {
+    color: rgb(var(--text-rgb) / 0.62);
+    white-space: nowrap;
+  }
+  .dest .arrow {
+    display: inline-block;
+    transition: transform 0.3s var(--ease);
+  }
+  .card-link:hover .dest {
+    color: var(--text);
+  }
+  .card-link:hover .dest .arrow {
+    transform: translateX(3px);
+  }
+</style>

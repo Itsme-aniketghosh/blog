@@ -1,0 +1,72 @@
+---
+title: "Reading a single feature out of a residual stream"
+description: "A worked example of pulling one interpretable direction out of a transformer's activations — and a note on why the arithmetic is the easy part."
+kind: research
+pubDate: 2026-07-15
+updated: 2026-07-20
+tags: ["interpretability", "mech-interp", "sae"]
+math: true
+featured: true
+crosspost:
+  lesswrong: "https://www.lesswrong.com/posts/example-reading-a-feature"
+---
+
+Most of the difficulty in mechanistic interpretability isn't the linear
+algebra. It's deciding what counts as a feature in the first place.<SideNote>
+This is the part that doesn't show up in the equations, and the part that
+takes the most time in practice.</SideNote> But the arithmetic is worth doing
+slowly, because it tells you exactly what you're assuming.
+
+## The setup
+
+Take a residual stream activation $x \in \mathbb{R}^d$ at some layer. The linear
+representation hypothesis says features are directions: a feature $f$ is a unit
+vector $w_f$, and the feature is "active" to the degree that
+
+$$
+a_f(x) = w_f^\top x
+$$
+
+is large. If we have a dictionary of features $W \in \mathbb{R}^{n \times d}$
+with $n > d$, then the activations are approximately a sparse combination
+
+$$
+x \approx \sum_{i} a_i\, w_i, \qquad a \text{ sparse.}
+$$
+
+The whole game of a sparse autoencoder is recovering that $a$ from $x$ without
+knowing $W$ in advance.
+
+## Pulling one feature out
+
+Suppose we already have a trained decoder $W_{\text{dec}}$. Reading feature $i$
+out of a batch of activations is a single matrix multiply:
+
+```python title="read_feature.py"
+import torch
+
+def feature_activations(x: torch.Tensor, W_enc: torch.Tensor,
+                        b_enc: torch.Tensor) -> torch.Tensor:
+    """x: (batch, d_model) activations. Returns (batch, n_features)."""
+    # ReLU keeps activations non-negative — features fire or they don't.
+    return torch.relu(x @ W_enc.T + b_enc)
+
+acts = feature_activations(residual_stream, W_enc, b_enc)
+top = acts[:, feature_id].topk(20)   # the 20 tokens that fire this feature hardest
+```
+
+The `topk` is the interpretability step, not the matrix multiply: you read the
+twenty tokens, and you decide whether they share something a human would call a
+concept.<SideNote>If they don't, the "feature" is probably a chunk of
+superposition you haven't disentangled — or your dictionary is too small.</SideNote>
+
+## Why the arithmetic is the easy part
+
+The equation $a_f(x) = w_f^\top x$ is honest about one thing: it assumes the
+direction $w_f$ is *fixed*. Features that are contextual — that mean different
+things in different positions — break that assumption quietly. The number still
+comes out; it just doesn't mean what you think.
+
+So the discipline is: do the arithmetic exactly, then spend your skepticism on
+the labels. The math will never tell you your feature is real. Only the tokens
+will.

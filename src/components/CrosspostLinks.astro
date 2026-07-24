@@ -1,0 +1,116 @@
+---
+import { platforms, type PlatformId } from '../lib/site';
+
+interface Props {
+  // Primary external destination (for external entries).
+  url?: string;
+  platform?: PlatformId;
+  // Mirrors / discussion homes.
+  crosspost?: { lesswrong?: string; substack?: string; medium?: string };
+  // "primary" = big destination button; "inline" = quiet meta links.
+  variant?: 'primary' | 'inline';
+}
+
+const { url, platform, crosspost, variant = 'inline' } = Astro.props;
+
+type Link = { key: Exclude<PlatformId, 'site'>; href: string };
+const links: Link[] = [];
+
+// Order: primary url first, then any remaining mirrors, de-duplicated.
+if (url && platform && platform !== 'site') {
+  links.push({ key: platform, href: url });
+}
+for (const key of ['lesswrong', 'substack', 'medium'] as const) {
+  const h = crosspost?.[key];
+  if (h && !links.some((l) => l.key === key)) links.push({ key, href: h });
+}
+---
+
+{
+  links.length > 0 &&
+    (variant === 'primary' ? (
+      <div class="cp-primary">
+        {links.map(({ key, href }, i) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener"
+            class:list={['cp-btn', { ghost: i > 0 }]}
+          >
+            <span>{platforms[key].verb} {platforms[key].label}</span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <ul class="cp-inline mono">
+        {links.map(({ key, href }) => (
+          <li>
+            <a href={href} target="_blank" rel="noopener">
+              {platforms[key].label} <span aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ))
+}
+
+<style>
+  .cp-primary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .cp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--text);
+    color: var(--bg);
+    font-weight: 600;
+    transition:
+      transform 0.3s var(--ease),
+      opacity 0.3s var(--ease);
+  }
+  .cp-btn .arrow {
+    transition: transform 0.3s var(--ease);
+  }
+  .cp-btn:hover {
+    transform: translateY(-1px);
+  }
+  .cp-btn:hover .arrow {
+    transform: translate(2px, -2px);
+  }
+  .cp-btn.ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+
+  .cp-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cp-inline a {
+    color: rgb(var(--text-rgb) / 0.62);
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.25s var(--ease),
+      border-color 0.25s var(--ease);
+    padding-bottom: 1px;
+  }
+  .cp-inline a:hover {
+    color: var(--text);
+    border-bottom-color: var(--border-strong);
+  }
+</style>

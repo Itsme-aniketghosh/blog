@@ -1,0 +1,87 @@
+---
+// Signature element: a Tufte-style margin note. On wide screens it sits in the
+// right margin, aligned to its anchor; on narrow screens it collapses to an
+// inline, numbered aside. Uses a checkbox toggle so it works with zero JS.
+let counter = (globalThis as any).__sidenoteCounter ?? 0;
+counter += 1;
+(globalThis as any).__sidenoteCounter = counter;
+const id = `sn-${counter}`;
+---
+
+<span class="sidenote-wrap">
+  <label for={id} class="sidenote-ref" aria-hidden="true">{counter}</label>
+  <input type="checkbox" id={id} class="sidenote-toggle" />
+  <small class="sidenote" role="note">
+    <span class="sidenote-num" aria-hidden="true">{counter}</span>
+    <slot />
+  </small>
+</span>
+
+<style>
+  .sidenote-wrap {
+    position: relative;
+  }
+
+  /* The little numeric marker in the text flow. */
+  .sidenote-ref {
+    font-family: var(--mono);
+    font-size: 0.62em;
+    vertical-align: super;
+    line-height: 0;
+    color: rgb(var(--text-rgb) / 0.55);
+    cursor: pointer;
+    padding: 0 0.15em;
+    transition: color 0.2s var(--ease);
+  }
+  .sidenote-ref:hover {
+    color: var(--text);
+  }
+
+  .sidenote-toggle {
+    display: none;
+  }
+
+  .sidenote {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: rgb(var(--text-rgb) / 0.66);
+  }
+  .sidenote-num {
+    font-family: var(--mono);
+    font-size: 0.7em;
+    color: rgb(var(--text-rgb) / 0.5);
+    margin-right: 0.4em;
+  }
+
+  /* Wide: float into the right margin provided by the Post grid. */
+  @media (min-width: 1080px) {
+    .sidenote-ref {
+      display: none; /* margin notes are visible; no marker needed */
+    }
+    .sidenote {
+      position: absolute;
+      left: calc(100% + 2.5rem);
+      top: 0;
+      width: 15rem;
+      display: block;
+      text-align: left;
+    }
+    .sidenote-num {
+      display: none;
+    }
+  }
+
+  /* Narrow: hide by default, reveal inline when the marker is toggled. */
+  @media (max-width: 1079px) {
+    .sidenote {
+      display: none;
+      margin: 0.75rem 0;
+      padding-left: 0.9rem;
+      border-left: 2px solid var(--border-strong);
+    }
+    .sidenote-toggle:checked ~ .sidenote {
+      display: block;
+    }
+  }
+</style>

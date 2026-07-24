@@ -1,0 +1,227 @@
+---
+import '../styles/global.css';
+import { href } from '../lib/paths';
+import { site } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path (no base) of the current page for canonical + OG url, e.g. "/posts/foo". */
+  path?: string;
+  /** Load KaTeX CSS only when a page needs math. */
+  math?: boolean;
+  ogType?: 'website' | 'article';
+}
+
+const {
+  title,
+  description = site.description,
+  path = '',
+  math = false,
+  ogType = 'website',
+} = Astro.props;
+
+const pageTitle = title ? `${title} — ${site.author}` : site.title;
+const canonical = new URL(href(path), site.url.replace(/\/blog$/, '')).toString();
+const nav = [
+  { label: 'Writing', href: href('/posts') },
+  { label: 'Portfolio', href: 'https://itsme-aniketghosh.github.io', external: true },
+];
+---
+
+<!doctype html>
+<html lang={site.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={href('/sitemap-index.xml')} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={site.title}
+      href={href('/rss.xml')}
+    />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title ?? site.title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.title} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {/* KaTeX CSS, self-hosted, only when the page renders math. */}
+    {math && <link rel="stylesheet" href={href('/katex/katex.min.css')} />}
+
+    {/* Never hide content if JS is disabled — reveal is enhancement only. */}
+    <noscript>
+      <style>
+        .reveal,
+        .reveal-stagger > * {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
+  </head>
+
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <header class="site-head">
+      <nav class="wrap site-nav" aria-label="Primary">
+        <a href={href('/')} class="brand">{site.author}</a>
+        <ul class="nav-links">
+          {
+            nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  {...(item.external
+                    ? { target: '_blank', rel: 'noopener' }
+                    : {})}
+                >
+                  {item.label}
+                  {item.external && <span class="ext" aria-hidden="true">↗</span>}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-foot">
+      <div class="wrap foot-inner">
+        <span class="mono">© {new Date().getFullYear()} {site.author}</span>
+        <div class="foot-links mono">
+          <a href={href('/posts')}>Writing</a>
+          <a href={href('/rss.xml')}>RSS</a>
+          <a href="https://itsme-aniketghosh.github.io" target="_blank" rel="noopener">Portfolio&nbsp;↗</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Scroll reveal — add .in-view once, then stop observing.
+      const els = document.querySelectorAll<HTMLElement>('.reveal, .reveal-stagger');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        els.forEach((el) => el.classList.add('in-view'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('in-view');
+                obs.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+        );
+        els.forEach((el) => io.observe(el));
+      }
+    </script>
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        background: var(--text);
+        color: var(--bg);
+        padding: 0.5rem 0.9rem;
+        border-radius: 4px;
+        z-index: 50;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+      }
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+      }
+
+      .site-head {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        backdrop-filter: saturate(140%) blur(10px);
+        background: rgb(12 12 12 / 0.72);
+        border-bottom: 1px solid var(--border);
+      }
+      .site-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 3.75rem;
+      }
+      .brand {
+        font-family: var(--display);
+        font-weight: 800;
+        font-size: 1.05rem;
+        letter-spacing: -0.02em;
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .nav-links a {
+        color: rgb(var(--text-rgb) / 0.62);
+        transition: color 0.25s var(--ease);
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .ext {
+        margin-left: 0.15em;
+        font-size: 0.9em;
+      }
+
+      main {
+        min-height: 60vh;
+      }
+
+      .site-foot {
+        margin-top: 6rem;
+        border-top: 1px solid var(--border);
+        padding-block: 2rem;
+      }
+      .foot-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .foot-links {
+        display: flex;
+        gap: 1.25rem;
+      }
+      .foot-links a {
+        color: rgb(var(--text-rgb) / 0.6);
+        transition: color 0.25s var(--ease);
+      }
+      .foot-links a:hover {
+        color: var(--text);
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,147 @@
+---
+// Reading container: measure, rhythm, and typography for rendered MDX.
+// Styles are global-within-scope so they reach markdown-generated HTML.
+---
+
+<div class="prose">
+  <slot />
+</div>
+
+<style is:global>
+  .prose {
+    font-family: var(--sans);
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: rgb(var(--text-rgb) / 0.9);
+    max-width: var(--measure);
+  }
+  .prose > * + * {
+    margin-top: 1.35em;
+  }
+
+  .prose p {
+    text-wrap: pretty;
+  }
+
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    font-family: var(--display);
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .prose h2 {
+    font-size: 1.7rem;
+    margin-top: 2.6em;
+    margin-bottom: 0.2em;
+  }
+  .prose h3 {
+    font-size: 1.3rem;
+    margin-top: 2em;
+  }
+  .prose h2 + *,
+  .prose h3 + * {
+    margin-top: 0.6em;
+  }
+
+  /* Anchor links: underline drawn from the baseline on hover. */
+  .prose a:not(.cp-btn) {
+    color: var(--text);
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    padding-bottom: 1px;
+    opacity: 0.92;
+    transition:
+      opacity 0.25s var(--ease),
+      background-size 0.25s var(--ease);
+  }
+  .prose a:not(.cp-btn):hover {
+    opacity: 1;
+    background-size: 100% 2px;
+  }
+
+  .prose strong {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .prose em {
+    font-style: italic;
+  }
+
+  .prose ul,
+  .prose ol {
+    padding-left: 1.4em;
+  }
+  .prose li + li {
+    margin-top: 0.5em;
+  }
+  .prose li::marker {
+    color: rgb(var(--text-rgb) / 0.4);
+  }
+
+  .prose blockquote {
+    margin-inline: 0;
+    padding-left: 1.2rem;
+    border-left: 2px solid var(--border-strong);
+    color: rgb(var(--text-rgb) / 0.72);
+    font-style: italic;
+  }
+
+  /* Inline code — mono, subtle well. Block code is handled by expressive-code. */
+  .prose :not(pre) > code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1em 0.35em;
+  }
+  .prose :not(pre) > code::before,
+  .prose :not(pre) > code::after {
+    content: none;
+  }
+
+  .prose .expressive-code {
+    margin-block: 1.6em;
+  }
+
+  .prose hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin-block: 2.5em;
+    max-width: 6rem;
+    margin-inline: 0;
+  }
+
+  .prose img,
+  .prose video {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .prose figure {
+    margin: 2em 0;
+  }
+  .prose figcaption {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-top: 0.6rem;
+  }
+
+  /* KaTeX: let display math scroll on small screens without breaking the measure. */
+  .prose .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 0.4em;
+  }
+  .prose .katex {
+    font-size: 1.05em;
+  }
+</style>

@@ -1,0 +1,177 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Base from './Base.astro';
+import Prose from '../components/Prose.astro';
+import CrosspostLinks from '../components/CrosspostLinks.astro';
+import { href } from '../lib/paths';
+
+interface Props {
+  entry: CollectionEntry<'posts'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+
+const fmt = (date: Date) =>
+  new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+
+const hasBridge =
+  Boolean(d.crosspost?.lesswrong || d.crosspost?.substack || d.crosspost?.medium);
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  path={`/posts/${entry.id}`}
+  math={d.math}
+  ogType="article"
+>
+  <article class="post">
+    <div class="wrap">
+      <a href={href('/posts')} class="back mono">← All writing</a>
+
+      <header class="post-head reveal">
+        <div class="post-meta mono">
+          <span class="kind">{d.kind}</span>
+          <time datetime={d.pubDate.toISOString()}>{fmt(d.pubDate)}</time>
+          {d.updated && <span class="upd">updated {fmt(d.updated)}</span>}
+        </div>
+        <h1 class="post-title">{d.title}</h1>
+        <p class="post-desc">{d.description}</p>
+
+        {
+          hasBridge && (
+            <div class="post-bridge">
+              <span class="mono bridge-label">Also on</span>
+              <CrosspostLinks crosspost={d.crosspost} variant="inline" />
+            </div>
+          )
+        }
+      </header>
+
+      {/* Grid gives the article a right margin for side-notes on wide screens. */}
+      <div class="post-body">
+        <Prose>
+          <slot />
+        </Prose>
+      </div>
+
+      <footer class="post-foot">
+        {
+          d.tags.length > 0 && (
+            <ul class="tags mono">
+              {d.tags.map((t) => (
+                <li>#{t}</li>
+              ))}
+            </ul>
+          )
+        }
+        {
+          d.kind === 'research' && (
+            <p class="discuss mono">
+              Discussion happens on LessWrong / the Alignment Forum.
+            </p>
+          )
+        }
+      </footer>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post {
+    padding-top: 2.5rem;
+  }
+  .back {
+    display: inline-block;
+    color: rgb(var(--text-rgb) / 0.55);
+    margin-bottom: 2.5rem;
+    transition: color 0.25s var(--ease);
+  }
+  .back:hover {
+    color: var(--text);
+  }
+
+  .post-head {
+    max-width: var(--measure);
+    margin-bottom: 3rem;
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+  .post-meta .kind {
+    color: var(--text);
+  }
+  .post-meta time,
+  .post-meta .upd {
+    color: var(--muted);
+  }
+
+  .post-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(2.2rem, 1.5rem + 3.4vw, 3.9rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .post-desc {
+    margin: 1.1rem 0 0;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: rgb(var(--text-rgb) / 0.6);
+    max-width: 54ch;
+  }
+
+  .post-bridge {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 1.6rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--border);
+  }
+  .bridge-label {
+    color: var(--muted);
+  }
+
+  /* Reserve the right margin for side-notes on wide screens. */
+  .post-body {
+    max-width: var(--measure);
+  }
+  @media (min-width: 1080px) {
+    .post-body {
+      max-width: none;
+      padding-right: 18rem; /* room for the 15rem note + gap */
+    }
+  }
+
+  .post-foot {
+    max-width: var(--measure);
+    margin-top: 4rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: rgb(var(--text-rgb) / 0.45);
+  }
+  .discuss {
+    color: var(--muted);
+  }
+</style>

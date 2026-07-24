@@ -1,0 +1,11 @@
+# Normalize line endings across machines — keeps diffs clean when migrating.
+* text=auto eol=lf
+
+# Binary assets — never normalize.
+*.woff  binary
+*.woff2 binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.ico   binary
+*.pdf   binary

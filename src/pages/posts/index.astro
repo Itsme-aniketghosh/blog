@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import KindFilter from '../../components/KindFilter.astro';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+const counts = {
+  all: posts.length,
+  research: posts.filter((p) => p.data.kind === 'research').length,
+  personal: posts.filter((p) => p.data.kind === 'personal').length,
+};
+---
+
+<Base
+  title="Writing"
+  description="Everything I've written on interpretability, AI safety, and life — one stream, linking out to wherever each piece lives."
+  path="/posts"
+>
+  <section class="wrap head">
+    <h1 class="page-title">Writing</h1>
+    <p class="page-lede">
+      One stream, newest first. Research reads like a paper; personal like an
+      essay. Each entry links out to where it lives.
+    </p>
+    <div class="controls">
+      <KindFilter counts={counts} />
+    </div>
+  </section>
+
+  <section class="wrap stream">
+    {posts.map((entry) => <PostCard entry={entry} />)}
+    {
+      posts.length === 0 && (
+        <p class="empty mono">Nothing published yet. Check back soon.</p>
+      )
+    }
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: clamp(3rem, 2rem + 4vw, 5rem);
+    padding-bottom: 1rem;
+  }
+  .page-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(2.4rem, 1.6rem + 3vw, 3.6rem);
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .page-lede {
+    margin: 1rem 0 0;
+    color: rgb(var(--text-rgb) / 0.62);
+    max-width: 52ch;
+    font-size: 1.1rem;
+  }
+  .controls {
+    margin-top: 2rem;
+  }
+  .stream {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .empty {
+    padding: 3rem 0;
+    color: var(--muted);
+  }
+</style>
