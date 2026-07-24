@@ -1,0 +1,40 @@
+---
+# NATIVE POST (written here). Copy to src/content/posts/<slug>.mdx and edit.
+# No `url` → a full local reader page is built with math, code, and side-notes.
+title: "A native research post with math and code"
+description: "One honest sentence stating the finding, not teasing it."
+kind: "research"
+pubDate: 2026-07-24
+updated: 2026-07-30              # optional; remove if never updated
+tags: ["interpretability", "sae"]
+draft: false
+featured: false
+math: true                      # loads KaTeX only because this is true
+crosspost:                      # optional — mirrors, shown as "Also on"
+  lesswrong: "https://www.lesswrong.com/posts/POST_ID/slug"
+---
+
+Open with the claim, not a wind-up. The reader should know the finding by the end
+of the first paragraph.<SideNote>Side-notes sit in the margin on wide screens and
+collapse to a tap-to-expand footnote on mobile. Use them for asides and
+citations.</SideNote>
+
+## A section heading
+
+Inline math like $a_f(x) = w_f^\top x$ renders with KaTeX. Display math too:
+
+$$
+x \approx \sum_i a_i\, w_i, \qquad a \text{ sparse.}
+$$
+
+Code blocks get titles, highlighting, and a copy button:
+
+```python title="read_feature.py"
+import torch
+
+def feature_activations(x, W_enc, b_enc):
+    # ReLU keeps activations non-negative — features fire or they don't.
+    return torch.relu(x @ W_enc.T + b_enc)
+```
+
+Keep sections uneven — some short, some long. End on a specific point, not a bow.

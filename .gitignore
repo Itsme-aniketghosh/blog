@@ -23,8 +23,12 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
-# AI tooling — installed skills / agents / design hooks (local only, matches portfolio)
-.claude/
+# AI tooling — installed skills / agents / design hooks (local only).
+# Keep .claude ignored EXCEPT the project skill we author and want to sync.
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/blog-publishing/
 .agents/
 .codex/
 .impeccable/
