@@ -10,7 +10,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
 );
 const recent = posts.slice(0, 5);
 
-const headWords = ['Everything', 'I', 'write', '—', 'and', 'where', 'to', 'read', 'it.'];
+const headWords = ['Everything', 'I', 'write,', 'in', 'one', 'place.'];
 ---
 
 <Base ogType="website">
@@ -26,12 +26,12 @@ const headWords = ['Everything', 'I', 'write', '—', 'and', 'where', 'to', 'rea
       }
     </h1>
     <p class="hero-lede reveal">
-      Research on mechanistic interpretability and AI safety, plus essays and
-      notes. This page is the index — each piece links out to wherever it
-      lives: LessWrong, Substack, Medium.
+      Two things, mostly: what's actually going on inside neural networks, and
+      whatever else I've been chewing on. It ends up scattered across
+      LessWrong, Substack, and Medium. This page pulls it back together.
     </p>
     <div class="hero-cta reveal">
-      <a href={href('/posts')} class="btn">Browse writing</a>
+      <a href={href('/posts')} class="btn">Start reading</a>
       <a href="https://itsme-aniketghosh.github.io" target="_blank" rel="noopener" class="btn ghost">
         Portfolio <span aria-hidden="true">↗</span>
       </a>
@@ -41,11 +41,20 @@ const headWords = ['Everything', 'I', 'write', '—', 'and', 'where', 'to', 'rea
   <section class="wrap section">
     <div class="section-head">
       <h2 class="section-title">Recent</h2>
-      <a href={href('/posts')} class="see-all mono">All writing →</a>
+      {recent.length > 0 && <a href={href('/posts')} class="see-all mono">All writing →</a>}
     </div>
-    <div class="stream">
-      {recent.map((entry) => <PostCard entry={entry} />)}
-    </div>
+    {
+      recent.length > 0 ? (
+        <div class="stream">
+          {recent.map((entry) => <PostCard entry={entry} />)}
+        </div>
+      ) : (
+        <p class="recent-empty">
+          Nothing up here yet. The first posts are on their way. Until then,
+          everything I've written is on the platforms below.
+        </p>
+      )
+    }
   </section>
 
   <section class="wrap section">
@@ -165,6 +174,14 @@ const headWords = ['Everything', 'I', 'write', '—', 'and', 'where', 'to', 'rea
   }
   .stream {
     border-bottom: 1px solid var(--border);
+  }
+  .recent-empty {
+    margin: 0;
+    padding: 1.6rem 0 2rem;
+    border-top: 1px solid var(--border);
+    color: rgb(var(--text-rgb) / 0.6);
+    max-width: 48ch;
+    line-height: 1.6;
   }
 
   .hub {

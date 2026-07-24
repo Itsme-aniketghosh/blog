@@ -6,7 +6,7 @@ export const site = {
   title: 'Aniket Ghosh — Writing',
   author: 'Aniket Ghosh',
   description:
-    'Writing on mechanistic interpretability and AI safety, plus notes and essays. A running index of everything I publish, wherever it lives.',
+    "Aniket Ghosh's writing. Research on what goes on inside neural networks, and essays on most other things. Whatever I publish, wherever it lands, gets tracked here.",
   // Absolute base for RSS/OG. Matches astro.config `site` + `base`.
   url: 'https://itsme-aniketghosh.github.io/blog',
   locale: 'en',
@@ -41,21 +41,21 @@ export const elsewhere: { label: string; href: string; note: string }[] = [
   {
     label: 'Portfolio',
     href: 'https://itsme-aniketghosh.github.io',
-    note: 'AI/ML engineering — projects, research, résumé',
+    note: 'What I build. Projects, research, the résumé.',
   },
   {
     label: 'LessWrong',
     href: platforms.lesswrong.home,
-    note: 'Interpretability & alignment posts',
+    note: 'Where the interpretability work goes.',
   },
   {
     label: 'Substack',
     href: platforms.substack.home,
-    note: 'Essays and notes, by email',
+    note: 'Essays, straight to your inbox.',
   },
   {
     label: 'Medium',
     href: platforms.medium.home,
-    note: 'Cross-posted long-form',
+    note: 'The same essays, mirrored.',
   },
 ];

@@ -17,14 +17,15 @@ const counts = {
 
 <Base
   title="Writing"
-  description="Everything I've written on interpretability, AI safety, and life — one stream, linking out to wherever each piece lives."
+  description="Everything I've written on interpretability, AI safety, and life, in one list that points out to wherever each piece was published."
   path="/posts"
 >
   <section class="wrap head">
     <h1 class="page-title">Writing</h1>
     <p class="page-lede">
-      One stream, newest first. Research reads like a paper; personal like an
-      essay. Each entry links out to where it lives.
+      Newest first. The research reads like a paper, the personal stuff like an
+      essay. Follow any of them and you'll land wherever it was actually
+      published.
     </p>
     <div class="controls">
       <KindFilter counts={counts} />
@@ -35,7 +36,7 @@ const counts = {
     {posts.map((entry) => <PostCard entry={entry} />)}
     {
       posts.length === 0 && (
-        <p class="empty mono">Nothing published yet. Check back soon.</p>
+        <p class="empty mono">Nothing here yet. The first posts are coming.</p>
       )
     }
   </section>
