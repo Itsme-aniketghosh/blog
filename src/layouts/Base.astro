@@ -24,7 +24,7 @@ const {
 const pageTitle = title ? `${title} — ${site.author}` : site.title;
 const canonical = new URL(href(path), site.url.replace(/\/blog$/, '')).toString();
 const nav = [
-  { label: 'Writing', href: href('/posts') },
+  { label: 'Writing', href: href('/#writing') },
   { label: 'Portfolio', href: 'https://itsme-aniketghosh.github.io', external: true },
 ];
 ---
@@ -105,7 +105,7 @@ const nav = [
       <div class="wrap foot-inner">
         <span class="mono">© {new Date().getFullYear()} {site.author}</span>
         <div class="foot-links mono">
-          <a href={href('/posts')}>Writing</a>
+          <a href={href('/#writing')}>Writing</a>
           <a href={href('/rss.xml')}>RSS</a>
           <a href="https://itsme-aniketghosh.github.io" target="_blank" rel="noopener">Portfolio&nbsp;↗</a>
         </div>

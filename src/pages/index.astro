@@ -2,13 +2,19 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PostCard from '../components/PostCard.astro';
+import KindFilter from '../components/KindFilter.astro';
 import { href } from '../lib/paths';
 import { elsewhere } from '../lib/site';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
-const recent = posts.slice(0, 5);
+
+const counts = {
+  all: posts.length,
+  research: posts.filter((p) => p.data.kind === 'research').length,
+  personal: posts.filter((p) => p.data.kind === 'personal').length,
+};
 
 const headWords = ['Everything', 'I', 'write,', 'in', 'one', 'place.'];
 ---
@@ -27,30 +33,32 @@ const headWords = ['Everything', 'I', 'write,', 'in', 'one', 'place.'];
     </h1>
     <p class="hero-lede reveal">
       Two things, mostly: what's actually going on inside neural networks, and
-      whatever else I've been chewing on. It lands in a few different
-      places. This page pulls it back together.
+      whatever else I've been chewing on. It lands in a few different places.
+      This page pulls it back together.
     </p>
     <div class="hero-cta reveal">
-      <a href={href('/posts')} class="btn">Start reading</a>
+      <a href={href('/#writing')} class="btn">Start reading</a>
       <a href="https://itsme-aniketghosh.github.io" target="_blank" rel="noopener" class="btn ghost">
         Portfolio <span aria-hidden="true">↗</span>
       </a>
     </div>
   </section>
 
-  <section class="wrap section">
-    <div class="section-head">
-      <h2 class="section-title">Recent</h2>
-      {recent.length > 0 && <a href={href('/posts')} class="see-all mono">All writing →</a>}
-    </div>
+  <section id="writing" class="wrap section">
+    <h2 class="section-title">Writing</h2>
     {
-      recent.length > 0 ? (
-        <div class="stream">
-          {recent.map((entry) => <PostCard entry={entry} />)}
-        </div>
+      posts.length > 0 ? (
+        <>
+          <div class="controls">
+            <KindFilter counts={counts} />
+          </div>
+          <div class="stream">
+            {posts.map((entry) => <PostCard entry={entry} />)}
+          </div>
+        </>
       ) : (
-        <p class="recent-empty">
-          Nothing up here yet. The first posts are on their way. Until then,
+        <p class="empty-note">
+          Nothing up here yet — the first posts are on their way. Until then,
           everything I've written is on the platforms below.
         </p>
       )
@@ -152,12 +160,9 @@ const headWords = ['Everything', 'I', 'write,', 'in', 'one', 'place.'];
   .section {
     padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem);
   }
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+  /* Offset the sticky header when jumping to #writing. */
+  #writing {
+    scroll-margin-top: 4.5rem;
   }
   .section-title {
     font-family: var(--display);
@@ -165,17 +170,13 @@ const headWords = ['Everything', 'I', 'write,', 'in', 'one', 'place.'];
     font-weight: 800;
     letter-spacing: -0.02em;
   }
-  .see-all {
-    color: rgb(var(--text-rgb) / 0.55);
-    transition: color 0.25s var(--ease);
-  }
-  .see-all:hover {
-    color: var(--text);
+  .controls {
+    margin: 1.5rem 0 0.25rem;
   }
   .stream {
     border-bottom: 1px solid var(--border);
   }
-  .recent-empty {
+  .empty-note {
     margin: 0;
     padding: 1.6rem 0 2rem;
     border-top: 1px solid var(--border);
