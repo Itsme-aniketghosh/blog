@@ -184,11 +184,33 @@ const nav = [
         text-transform: uppercase;
       }
       .nav-links a {
+        position: relative;
         color: rgb(var(--text-rgb) / 0.62);
         transition: color 0.25s var(--ease);
       }
+      /* Underline draws in from the left on hover — the portfolio's link cue. */
+      .nav-links a::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        width: 100%;
+        height: 1px;
+        background: var(--text);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 220ms var(--ease);
+      }
       .nav-links a:hover {
         color: var(--text);
+      }
+      .nav-links a:hover::after {
+        transform: scaleX(1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .nav-links a::after {
+          transition: none;
+        }
       }
       .ext {
         margin-left: 0.15em;

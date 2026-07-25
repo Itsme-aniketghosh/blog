@@ -79,8 +79,36 @@ body {
   font-synthesis: none;
 }
 
+/* Solid cream highlight, dark text — matches the portfolio. */
 ::selection {
-  background: rgb(var(--text-rgb) / 0.16);
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* Thin scrollbar — matches the portfolio. */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* Static print grain over everything — the portfolio's signature paper texture.
+   Fixed, non-interactive, no animation (safe under reduced-motion). */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9500;
 }
 
 /* Links: no accent hue, so affordance is a hairline underline that lifts on hover. */
@@ -94,9 +122,9 @@ h2,
 h3,
 h4 {
   font-family: var(--display);
-  font-weight: 800;
+  font-weight: 900; /* portfolio display weight */
   line-height: 1.08;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   text-wrap: balance;
   margin: 0;
 }
