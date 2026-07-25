@@ -16,6 +16,7 @@
  * ------------------------------------------------------------------ */
 :root {
   --bg: #0c0c0c; /* near-black, slightly warm */
+  --bg-rgb: 12 12 12; /* for rgb(var(--bg-rgb) / a) — e.g. the translucent header */
   --surface: #141414; /* elevated surface */
   --surface-2: #0f0f0f; /* code wells, insets */
   --text: #f0ece4; /* warm cream — primary foreground */

@@ -48,14 +48,17 @@ export const elsewhere: { label: string; href: string; note: string }[] = [
     href: platforms.lesswrong.home,
     note: 'Where the interpretability work goes.',
   },
-  {
-    label: 'Substack',
-    href: platforms.substack.home,
-    note: 'Essays, straight to your inbox.',
-  },
-  {
-    label: 'Medium',
-    href: platforms.medium.home,
-    note: 'The same essays, mirrored.',
-  },
+  // Hidden until there's actually something to point to there. Un-comment each
+  // once the first Substack / Medium piece is up. (The `platforms` labels above
+  // still resolve, so any post that sets `platform:` keeps linking out fine.)
+  // {
+  //   label: 'Substack',
+  //   href: platforms.substack.home,
+  //   note: 'Essays, straight to your inbox.',
+  // },
+  // {
+  //   label: 'Medium',
+  //   href: platforms.medium.home,
+  //   note: 'The same essays, mirrored.',
+  // },
 ];
