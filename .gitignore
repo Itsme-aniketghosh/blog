@@ -33,3 +33,6 @@ Thumbs.db
 .codex/
 .impeccable/
 skills-lock.json
+# impeccable also installs a copy for GitHub Copilot into the tracked .github/ dir
+.github/skills/
+.github/hooks/
